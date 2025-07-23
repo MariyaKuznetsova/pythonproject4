@@ -42,3 +42,4 @@ YYYY-MM-DD HH:MM:SS и возвращающую JSON-ответ"""
 
     return json_data
 
+

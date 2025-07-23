@@ -116,8 +116,6 @@ def get_currency(path_to_json: str) -> List[dict]:
         return currency_rates
 
 
-# print(get_currency("../data/user_settings.json"))
-
 def get_stock(path_to_json: str) -> List[dict]:
     """Функция, которая принимает на вход JSON-файл и возвращает список словарей с данными
         о стоимости валют"""
@@ -129,35 +127,11 @@ def get_stock(path_to_json: str) -> List[dict]:
         stock_rates = []
 
         for stock in stocks:
-            url = f"https://www.alphavantage.co/query?function=REALTIME_BULK_QUOTES&symbol={stock}&apikey={API_KEY_STOCK}"
+            url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock}&apikey={API_KEY_STOCK}"
             response = requests.get(url)
             repos = response.json()
-            print(repos)
-            dicts_repos = repos['data']
-            print(dicts_repos)
-            for dicts in dicts_repos:
-                stock_symbol = dicts['symbol']
-                stock_close = dicts['close']
-                stock_need = {"stock": f"{stock_symbol}", "price": f"{stock_close}"}
+            stock_symbol = repos['Global Quote']['01. symbol']
+            stock_price = repos['Global Quote']['05. price']
+            stock_need = {"stock": f"{stock_symbol}", "price": f"{stock_price}"}
             stock_rates.append(stock_need)
-        print(stock_rates)
-# {
-#       "stock": f"{stock}",
-#       "price": 1007.08
-#     }
-print(get_stock("../data/user_settings.json"))
-# {'Дата операции': '03.01.2018 15:03:35',
-#  'Дата платежа': '04.01.2018',
-#  'Номер карты': '*7197',
-#  'Статус': 'OK',
-#  'Сумма операции': -73.06,
-#  'Валюта операции': 'RUB',
-#  'Сумма платежа': -73.06,
-#  'Валюта платежа': 'RUB',
-#  'Кэшбэк': nan,
-#  'Категория': 'Супермаркеты',
-#  'MCC': 5499.0,
-#  'Описание': 'Magazin 25',
-#  'Бонусы (включая кэшбэк)': 1,
-#  'Округление на инвесткопилку': 0,
-#  'Сумма операции с округлением': 73.06}
+        return stock_rates
