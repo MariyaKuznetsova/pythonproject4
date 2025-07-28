@@ -1,14 +1,12 @@
 import json
-from datetime import datetime
-from typing import Dict, List, Union, Any
-import pandas as pd
-from pandas import DataFrame
 import os
+from datetime import datetime
+from typing import List
 
-
+import pandas as pd
 import requests
 from dotenv import load_dotenv
-
+from pandas import DataFrame
 
 load_dotenv("../.env")
 """Читаем API ключ из окружения"""
@@ -16,44 +14,40 @@ API_KEY = os.getenv("API_KEY")
 API_KEY_STOCK = os.getenv("API_KEY_STOCK")
 
 
-
 def get_time_for_greeting():
-   """
-     Функция возвращает приветствие
-     в зависимости от текущего времени
-   """
-   user_datetime = datetime.now()
-   hour = user_datetime.hour
-   if 5 <= hour < 12:
-     return "Доброе утро"
-   elif  12 <= hour < 18:
-     return "Добрый день"
-   elif  18 <= hour < 23:
-     return "Добрый вечер"
-   else:
-     return "Доброй ночи"
+    """
+    Функция возвращает приветствие
+    в зависимости от текущего времени
+    """
+    user_datetime = datetime.now()
+    hour = user_datetime.hour
+    if 5 <= hour < 12:
+        return "Доброе утро"
+    elif 12 <= hour < 18:
+        return "Добрый день"
+    elif 18 <= hour < 23:
+        return "Добрый вечер"
+    else:
+        return "Доброй ночи"
 
 
 def get_date_time(date_time, date_format="%Y-%m-%d %H:%M:%S"):
     """Функция преобразования формат даты"""
     end_date = datetime.strptime(date_time, date_format)
     start_date = end_date.replace(day=1, hour=0, minute=0, second=0)
-    return [
-        start_date.strftime("%d.%m.%Y %H:%M:%S"),
-        end_date.strftime("%d.%m.%Y %H:%M:%S")
-    ]
+    return [start_date.strftime("%d.%m.%Y %H:%M:%S"), end_date.strftime("%d.%m.%Y %H:%M:%S")]
 
 
 def get_path_and_period(path_fo_file: str, period_date: List) -> DataFrame:
     """Функция принимает путь к Excel файлу и список дат и возвращает таблицу в данном периоде"""
-    df = pd.read_excel(path_fo_file, sheet_name='Отчет по операциям')
+    df = pd.read_excel(path_fo_file, sheet_name="Отчет по операциям")
 
-    df['Дата операции'] = pd.to_datetime(df['Дата операции'], dayfirst=True)
+    df["Дата операции"] = pd.to_datetime(df["Дата операции"], dayfirst=True)
     start_date = datetime.strptime(period_date[0], "%d.%m.%Y %H:%M:%S")
     end_date = datetime.strptime(period_date[1], "%d.%m.%Y %H:%M:%S")
 
-    filtered_df = df[(df['Дата операции'] >= start_date) & (df['Дата операции'] <= end_date)]
-    sorted_df = filtered_df.sort_values(by='Дата операции', ascending=True)
+    filtered_df = df[(df["Дата операции"] >= start_date) & (df["Дата операции"] <= end_date)]
+    sorted_df = filtered_df.sort_values(by="Дата операции", ascending=True)
     return sorted_df
 
 
@@ -75,7 +69,7 @@ def get_card_with_spend(sorted_df: DataFrame) -> List[dict]:
 def get_top_transactions(sorted_df: DataFrame, get_top):
     """Функция принимает DataFrame и возвращает список get_top топ-транзакций по сумме платежа"""
     top_pay_transactions = []
-    sorted_pay_df = sorted_df.sort_values(by='Сумма операции', ascending=False)
+    sorted_pay_df = sorted_df.sort_values(by="Сумма операции", ascending=False)
     top_transactions = sorted_pay_df.head(get_top)
     top_transactions_sorted = top_transactions[["Дата платежа", "Сумма операции", "Категория", "Описание"]]
     for index, row in top_transactions_sorted.iterrows():
@@ -94,7 +88,7 @@ def get_currency(path_to_json: str) -> List[dict]:
 
     with open(path_to_json, "r", encoding="utf-8") as file:
         data = json.load(file)
-        currences = data['user_currencies']
+        currences = data["user_currencies"]
 
         currency_rates = []
 
@@ -102,7 +96,7 @@ def get_currency(path_to_json: str) -> List[dict]:
             url = f"https://openexchangerates.org/api/latest.json?app_id={API_KEY}"
             response = requests.get(url)
             repos = response.json()
-            #print(repos)
+            # print(repos)
             answer = repos.get("rates")
             answer_rub = round(answer.get("RUB"), 2)
 
@@ -114,17 +108,17 @@ def get_currency(path_to_json: str) -> List[dict]:
                 answer_need = round((answer_usd * answer_rub), 2)
                 all_answers = answer_need
 
-            currency_rates.append({"currency": f'{currence}', "rate": f'{all_answers}'})
+            currency_rates.append({"currency": f"{currence}", "rate": f"{all_answers}"})
         return currency_rates
 
 
 def get_stock(path_to_json: str) -> List[dict]:
     """Функция, которая принимает на вход JSON-файл и возвращает список словарей с данными
-        о стоимости акций"""
+    о стоимости акций"""
 
     with open(path_to_json, "r", encoding="utf-8") as file:
         data = json.load(file)
-        stocks = data['user_stocks']
+        stocks = data["user_stocks"]
 
         stock_rates = []
 
@@ -132,9 +126,9 @@ def get_stock(path_to_json: str) -> List[dict]:
             url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock}&apikey={API_KEY_STOCK}"
             response = requests.get(url)
             repos = response.json()
-            #print(repos)
-            stock_symbol = repos['Global Quote']['01. symbol']
-            stock_price = repos['Global Quote']['05. price']
+            # print(repos)
+            stock_symbol = repos["Global Quote"]["01. symbol"]
+            stock_price = repos["Global Quote"]["05. price"]
             stock_need = {"stock": f"{stock_symbol}", "price": f"{stock_price}"}
             stock_rates.append(stock_need)
         return stock_rates

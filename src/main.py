@@ -1,7 +1,6 @@
-from src.views import main_info
-from src.reports import spending_by_category, get_date_optional, get_path
+from src.reports import get_date_optional, get_path, spending_by_category
 from src.services import excel_func, simple_search
-
+from src.views import main_info
 
 if __name__ == "__main__":
     date_time = "2021-06-14 15:30:00"

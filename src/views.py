@@ -1,17 +1,18 @@
 import json
-from locale import currency
-from typing import Dict, Any
-from src.utils import (
-    get_time_for_greeting,
-    get_date_time,
-    get_path_and_period,
-    get_card_with_spend,
-    get_top_transactions,
-    get_currency,
-    get_stock
-)
 import logging
 import os
+
+from typing import Any, Dict
+
+from src.utils import (
+    get_card_with_spend,
+    get_currency,
+    get_date_time,
+    get_path_and_period,
+    get_stock,
+    get_time_for_greeting,
+    get_top_transactions,
+)
 
 logger = logging.getLogger("views")
 logger.setLevel(logging.DEBUG)
@@ -21,11 +22,14 @@ file_formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s: %(messag
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
-logger.debug(f"Выполняется функция, принимающую на вход строку с датой и временем и возвращающую JSON-ответ: {'main_info'}")
+logger.debug(
+    f"Выполняется функция, принимающую на вход строку с датой и временем и возвращающую JSON-ответ: {'main_info'}"
+)
+
 
 def main_info(date_time: str) -> Dict[str, Any]:
     """Функцию, принимающую на вход строку с датой и временем в формате
-YYYY-MM-DD HH:MM:SS и возвращающую JSON-ответ"""
+    YYYY-MM-DD HH:MM:SS и возвращающую JSON-ответ"""
     logger.info(f"Выполняется срез по нужному диапазону: {date_time}")
     # Срез по нужному диапазону.
     time_period = get_date_time(date_time)
@@ -48,7 +52,13 @@ YYYY-MM-DD HH:MM:SS и возвращающую JSON-ответ"""
     stock_prices = get_stock("../data/user_settings.json")
     logger.debug(f"Приложение показывает стоимость акций из S&P500 на сегодняшнюю дату: {stock_prices}")
 
-    data = {"greeting": greeting, "cards": cards, "top_transactions": top_five_transactions, "currency_rates": currency_rates, "stock_prices": stock_prices}
+    data = {
+        "greeting": greeting,
+        "cards": cards,
+        "top_transactions": top_five_transactions,
+        "currency_rates": currency_rates,
+        "stock_prices": stock_prices,
+    }
 
     json_data = json.dumps(data, ensure_ascii=False, indent=4)
     logger.debug("Приложение выводит результат в виде JSON-ответа")

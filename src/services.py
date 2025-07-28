@@ -1,8 +1,9 @@
-import re
-from typing import Dict, Union, List
-import pandas as pd
 import logging
 import os
+import re
+from typing import Dict, List, Union
+
+import pandas as pd
 
 logger = logging.getLogger("services")
 logger.setLevel(logging.DEBUG)
@@ -13,6 +14,7 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 logger.debug(f"Выполняется функция поиска операций: {'simple_search'}")
+
 
 def excel_func(excel_file: Union[str]) -> List[Dict]:
     """Функция для считывания финансовых операций из Excel"""
@@ -35,10 +37,14 @@ def simple_search(data: list[dict], search: str) -> list[dict]:
         logger.info(f"Выполняется поиск в списке словарей операций по заданной строке: {pattern}")
         for operation in data:
             if re.search(pattern, str(operation["Описание"]), flags=re.IGNORECASE):
-                logger.debug(f"Выполнился поиск в списке словарей операций по заданной строке: {pattern} в столбце Описание")
+                logger.debug(
+                    f"Выполнился поиск в списке словарей операций по заданной строке: {pattern} в столбце Описание"
+                )
                 dict_new.append(operation)
             elif re.search(pattern, str(operation["Категория"]), flags=re.IGNORECASE):
-                logger.debug(f"Выполнился поиск в списке словарей операций по заданной строке: {pattern} в столбце Категория")
+                logger.debug(
+                    f"Выполнился поиск в списке словарей операций по заданной строке: {pattern} в столбце Категория"
+                )
                 dict_new.append(operation)
             else:
                 continue
@@ -55,6 +61,3 @@ if __name__ == "__main__":
     search_s = input()
     answer = simple_search(datas, search_s)
     print(answer)
-
-
-
