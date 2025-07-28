@@ -5,9 +5,10 @@ import pandas as pd
 from pandas import DataFrame
 import os
 
+
 import requests
 from dotenv import load_dotenv
-# from dadata import Dadata
+
 
 load_dotenv("../.env")
 """Читаем API ключ из окружения"""
@@ -101,6 +102,7 @@ def get_currency(path_to_json: str) -> List[dict]:
             url = f"https://openexchangerates.org/api/latest.json?app_id={API_KEY}"
             response = requests.get(url)
             repos = response.json()
+            #print(repos)
             answer = repos.get("rates")
             answer_rub = round(answer.get("RUB"), 2)
 
@@ -118,7 +120,7 @@ def get_currency(path_to_json: str) -> List[dict]:
 
 def get_stock(path_to_json: str) -> List[dict]:
     """Функция, которая принимает на вход JSON-файл и возвращает список словарей с данными
-        о стоимости валют"""
+        о стоимости акций"""
 
     with open(path_to_json, "r", encoding="utf-8") as file:
         data = json.load(file)
@@ -130,8 +132,14 @@ def get_stock(path_to_json: str) -> List[dict]:
             url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock}&apikey={API_KEY_STOCK}"
             response = requests.get(url)
             repos = response.json()
+            #print(repos)
             stock_symbol = repos['Global Quote']['01. symbol']
             stock_price = repos['Global Quote']['05. price']
             stock_need = {"stock": f"{stock_symbol}", "price": f"{stock_price}"}
             stock_rates.append(stock_need)
         return stock_rates
+
+
+# if __name__ == "__main__":
+#     #print(get_currency("../data/user_settings.json"))
+#     print(get_stock("../data/user_settings.json"))

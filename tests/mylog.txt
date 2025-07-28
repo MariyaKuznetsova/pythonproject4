@@ -1,0 +1,1 @@
+spending_by_category error: TypeError. Inputs: (), {}
